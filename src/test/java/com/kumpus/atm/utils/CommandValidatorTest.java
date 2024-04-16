@@ -1,8 +1,8 @@
 package com.kumpus.atm.utils;
 
 import com.kumpus.atm.exception.InvalidCommandException;
-import com.kumpus.atm.model.DepositCommandValues;
-import com.kumpus.atm.model.WithdrawalCommandValues;
+import com.kumpus.atm.model.CommandValuesDeposit;
+import com.kumpus.atm.model.CommandValuesWithdrawal;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,7 +17,7 @@ class CommandValidatorTest {
     @Test
     void validateDepositCommand_ValidCommand_ReturnsDepositCommandValues() {
         String command = "+ USD 10 5";
-        DepositCommandValues depositCommandValues = null;
+        CommandValuesDeposit depositCommandValues = null;
         try {
             depositCommandValues = CommandValidator.validateDepositCommand(command);
         } catch (InvalidCommandException e) {
@@ -50,15 +50,15 @@ class CommandValidatorTest {
     @Test
     void validateWithdrawalCommand_ValidCommand_ReturnsWithdrawalCommandValues() {
         String command = "- USD 50";
-        WithdrawalCommandValues withdrawalCommandValues = null;
+        CommandValuesWithdrawal commandValuesWithdrawal = null;
         try {
-            withdrawalCommandValues = CommandValidator.validateWithdrawalCommand(command);
+            commandValuesWithdrawal = CommandValidator.validateWithdrawalCommand(command);
         } catch (InvalidCommandException e) {
             fail("Unexpected exception: " + e.getMessage());
         }
-        assertNotNull(withdrawalCommandValues);
-        assertEquals("USD", withdrawalCommandValues.getCurrency());
-        assertEquals(50, withdrawalCommandValues.getAmount());
+        assertNotNull(commandValuesWithdrawal);
+        assertEquals("USD", commandValuesWithdrawal.getCurrency());
+        assertEquals(50, commandValuesWithdrawal.getAmount());
     }
 
     @Test

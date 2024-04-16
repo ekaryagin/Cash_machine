@@ -1,8 +1,8 @@
 package com.kumpus.atm.utils;
 
 import com.kumpus.atm.exception.InvalidCommandException;
-import com.kumpus.atm.model.DepositCommandValues;
-import com.kumpus.atm.model.WithdrawalCommandValues;
+import com.kumpus.atm.model.CommandValuesDeposit;
+import com.kumpus.atm.model.CommandValuesWithdrawal;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +19,7 @@ public class CommandValidator {
     private static final Set<Integer> VALID_VALUES =
             new HashSet<>(Arrays.asList(1, 5, 10, 50, 100, 500, 1000, 5000));
 
-    public static DepositCommandValues validateDepositCommand(String command) throws InvalidCommandException {
+    public static CommandValuesDeposit validateDepositCommand(String command) throws InvalidCommandException {
         if (Pattern.matches(PATTERN_ADD_COMMAND, command)) {
             try {
                 String[] parts = command.split("\\s+");
@@ -27,7 +27,7 @@ public class CommandValidator {
                 int value = Integer.parseInt(parts[2]);
                 int quantity = Integer.parseInt(parts[3]);
                 if (VALID_VALUES.contains(value)) {
-                    return new DepositCommandValues(currency, value, quantity);
+                    return new CommandValuesDeposit(currency, value, quantity);
                 }
             } catch (NumberFormatException ex) {
                 throw new InvalidCommandException("Invalid number format in deposit command", ex);
@@ -36,13 +36,13 @@ public class CommandValidator {
         throw new InvalidCommandException("Invalid deposit command");
     }
 
-    public static WithdrawalCommandValues validateWithdrawalCommand(String command) throws InvalidCommandException {
+    public static CommandValuesWithdrawal validateWithdrawalCommand(String command) throws InvalidCommandException {
         if (Pattern.matches(PATTERN_GET_CASH_COMMAND, command)) {
             try {
                 String[] parts = command.split("\\s+");
                 String currency = parts[1];
                 int amount = Integer.parseInt(parts[2]);
-                return new WithdrawalCommandValues(currency, amount);
+                return new CommandValuesWithdrawal(currency, amount);
             } catch (NumberFormatException ex) {
                 throw new InvalidCommandException("Invalid number format in deposit command", ex);
             }

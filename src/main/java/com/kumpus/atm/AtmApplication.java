@@ -13,5 +13,4 @@ public class AtmApplication {
 		ATM atm = context.getBean(ATM.class);
 		atm.run();
 	}
-
 }

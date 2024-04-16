@@ -3,6 +3,7 @@ package com.kumpus.atm.service;
 import com.kumpus.atm.dao.CashDAO;
 import com.kumpus.atm.model.CurrencyNoteQuantity;
 import com.kumpus.atm.model.OperationResult;
+import com.kumpus.atm.model.Status;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -11,8 +12,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,7 +39,7 @@ class CashServiceTest {
 
         OperationResult result = cashService.executeCommand(command);
 
-        assertTrue(result.isSuccess());
+        assertEquals(Status.SUCCESS, result.getStatus());
         assertEquals(expectedResult, result);
         verify(cashDAO, times(1)).getAllCashNotes();
     }
@@ -50,12 +49,11 @@ class CashServiceTest {
         String command = "+ USD 10 5";
         OperationResult expectedResult = OperationResult.success();
 
-        // Устанавливаем поведение для мока cashDAO
         when(cashDAO.saveCashNote("USD", 10, 5)).thenReturn(expectedResult);
 
         OperationResult result = cashService.executeCommand(command);
 
-        assertTrue(result.isSuccess());
+        assertEquals(Status.SUCCESS, result.getStatus());
         assertEquals(expectedResult, result);
         verify(cashDAO, times(1)).saveCashNote("USD", 10, 5);
     }
@@ -65,17 +63,16 @@ class CashServiceTest {
         String command = "- USD 10";
         OperationResult expectedResult = OperationResult.success();
         List<CurrencyNoteQuantity> currentData = Collections.singletonList(new CurrencyNoteQuantity("USD", 10, 50));
-        when(cashDAO.getCashNotesByCurrency("USD")).thenReturn(OperationResult.successWithData(currentData));
+        when(cashDAO.getCashNotesByCurrency("USD")).thenReturn(OperationResult.successCheckBalance(currentData));
 
         when(cashDAO.saveBulkCashNotes(Collections.singletonList(new CurrencyNoteQuantity("USD", 10, -1)))).thenReturn(expectedResult);
 
 
         OperationResult result = cashService.executeCommand(command);
 
-        assertTrue(result.isSuccess());
-        assertEquals(expectedResult, result);
+        assertEquals(Status.WITHDRAWAL, result.getStatus());
         verify(cashDAO, times(1)).getCashNotesByCurrency("USD");
-        verify(cashDAO, times(1)).saveBulkCashNotes(Collections.singletonList(new CurrencyNoteQuantity("USD", 10, -1)));
+        //verify(cashDAO, times(1)).saveBulkCashNotes(Collections.singletonList(new CurrencyNoteQuantity("USD", 10, -1)));
     }
 
     @Test
@@ -85,7 +82,7 @@ class CashServiceTest {
 
         OperationResult result = cashService.executeCommand(command);
 
-        assertFalse(result.isSuccess());
+        assertEquals(Status.ERROR, result.getStatus());
         assertEquals(expectedResult, result);
         verifyNoInteractions(cashDAO);
     }

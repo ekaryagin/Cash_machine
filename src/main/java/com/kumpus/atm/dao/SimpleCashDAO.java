@@ -49,7 +49,7 @@ public class SimpleCashDAO implements CashDAO {
         if (cashData.containsKey(currency)) {
             Map<Integer, Integer> currencyData = cashData.get(currency);
             if (currencyData.containsKey(value)) {
-                return OperationResult.successWithData(
+                return OperationResult.successCheckBalance(
                         Collections.singletonList(
                                 new CurrencyNoteQuantity(currency, value, currencyData.get(value))));
             }
@@ -64,9 +64,9 @@ public class SimpleCashDAO implements CashDAO {
             List<CurrencyNoteQuantity> currencyNotes = new ArrayList<>();
             currencyData.forEach((value, quantity) ->
                     currencyNotes.add(new CurrencyNoteQuantity(currency, value, quantity)));
-            return OperationResult.successWithData(currencyNotes);
+            return OperationResult.successCheckBalance(currencyNotes);
         }
-        return OperationResult.error("No data found for currency: " + currency);
+        return OperationResult.error(NOT_FOUND);
     }
 
     @Override
@@ -77,6 +77,6 @@ public class SimpleCashDAO implements CashDAO {
                 notes.forEach((value, quantity) ->
                         allNotes.add(new CurrencyNoteQuantity(currency, value, quantity))));
 
-        return OperationResult.successWithData(allNotes);
+        return OperationResult.successCheckBalance(allNotes);
     }
 }

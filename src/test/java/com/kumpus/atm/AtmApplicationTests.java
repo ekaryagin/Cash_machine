@@ -8,6 +8,7 @@ class AtmApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// TODO интеграционные тесты
 	}
 
 }

@@ -7,32 +7,38 @@ import java.util.List;
 
 @Data
 public class OperationResult {
-    private final boolean success;
+    private static final String NO_ERROR = "NO_ERROR";
+    private final Status status;
+    // используется для предоставления списка доступных купюр и списка выдачи наличности
     private final List<CurrencyNoteQuantity> data;
     private final String errorMessage;
 
-    private OperationResult(boolean success,
+    private OperationResult(Status status,
                             List<CurrencyNoteQuantity> data,
                             String errorMessage) {
-        this.success = success;
+        this.status = status;
         this.data = data;
         this.errorMessage = errorMessage;
     }
 
     public static OperationResult success() {
-        return new OperationResult(true, Collections.emptyList(), "NO_ERROR");
+        return new OperationResult(Status.SUCCESS, Collections.emptyList(), NO_ERROR);
     }
 
-    public static OperationResult successWithData(List<CurrencyNoteQuantity> data) {
-        return new OperationResult(true, data, "NO_ERROR");
+    public static OperationResult successCheckBalance(List<CurrencyNoteQuantity> data) {
+        return new OperationResult(Status.INFO, data, NO_ERROR);
+    }
+
+    public static OperationResult successWithdrawal(List<CurrencyNoteQuantity> data) {
+        return new OperationResult(Status.WITHDRAWAL, data, NO_ERROR);
     }
 
     public static OperationResult error(String errorMessage) {
-        return new OperationResult(false, Collections.emptyList(), errorMessage);
+        return new OperationResult(Status.ERROR, Collections.emptyList(), errorMessage);
     }
 
-    public boolean isSuccess() {
-        return success;
+    public Status getStatus() {
+        return status;
     }
 
     public List<CurrencyNoteQuantity> getData() {
@@ -41,17 +47,5 @@ public class OperationResult {
 
     public String getErrorMessage() {
         return errorMessage;
-    }
-
-    @Override
-    public String toString() {
-        String result = "";
-        if (success){
-            for (CurrencyNoteQuantity note: data){
-                result += note.getCurrency() + " " + note.getValue() + " " + note.getQuantity() + "\n";
-            }
-            return result + "OK\n";
-        }
-        return "ERROR\n";
     }
 }
